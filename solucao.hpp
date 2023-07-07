@@ -56,6 +56,7 @@ public:
     Noh *pai;
     Noh *direito;
     Noh *esquerdo;
+    int altura;
 
     // Você deve completar a estrutura do nó com:
     //
@@ -343,10 +344,28 @@ public:
   // necessário que o nó do sucessor realmente ocupe o lugar da árvore que
   // estava sendo ocupado pelo nó a ser removido.
 
-  Iterador inserir(TC c, TV v);
-  //  {
-  //  // TODO
-  //  }
+  Iterador inserir(TC c, TV v)
+  {
+    Noh nohAserInserido{c, v, &this->sent, &this->sent, &this->sent};
+    Noh *nohQueEuEstou = this->raiz->direito;
+    this->sent.valor = v;
+    while (nohQueEuEstou.valor != this->sent.valor)
+    {
+      if (nohQueEuEstou.valor >= v)
+      {
+        nohQueEuEstou = *(nohQueEuEstou.direito);
+      }
+      else
+      {
+        nohQueEuEstou = *(nohQueEuEstou.esquerdo);
+      }
+    }
+    if (nohQueEuEstou != *(this->sent))
+    {
+    }
+    {
+    }
+  }
 
   // --------------------------------------------------------------------------
 
@@ -354,10 +373,34 @@ public:
   // caso essa chave esteja presente no dicionário.
   // Se a chave não estiver presente, deve retornar um iterador para o "fim".
 
-  Iterador buscar(TC c);
-  //  {
-  //  // TODO
-  //  }
+  Iterador buscar(TC c)
+  {
+    Noh *nohQueEuEstou = this->raiz->esquerdo;
+    this->sent.chave = c;
+    Noh *ponteiroDopai = nullptr;
+    while (nohQueEuEstou->chave != c)
+    {
+
+      if (nohQueEuEstou->chave >= c)
+      {
+        ponteiroDopai = nohQueEuEstou;
+        nohQueEuEstou = nohQueEuEstou->direito;
+      }
+      else
+      {
+        ponteiroDopai = nohQueEuEstou;
+        nohQueEuEstou = nohQueEuEstou->esquerdo;
+      }
+    }
+    if (*(nohQueEuEstou) != this->sent)
+    {
+      return Iterador(nohQueEuEstou);
+    }
+    else
+    {
+      return Iterador(ponteiroDopai);
+    }
+  }
 
   // --------------------------------------------------------------------------
 
