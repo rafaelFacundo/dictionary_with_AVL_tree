@@ -5,8 +5,14 @@ using namespace std;
 int main()
 {
     DicioAVL<int, int> *teste = new DicioAVL<int, int>();
-    auto testeBusca = teste->buscar(1);
-    cout << "Resultado: " << testeBusca.chave() << "\n";
+    // auto testeBusca = teste->inserir(1, 1917);
+    teste->buscar(-1898);
+    teste->inserir(6, 2356);
+    teste->inserir(7, 884545);
+    teste->inserir(89, 884545);
+    teste->inserir(5, 884545);
+
+    teste->printarDicionario();
 
     return 0;
 }

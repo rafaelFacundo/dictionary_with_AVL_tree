@@ -26,6 +26,8 @@
 
 #ifndef DICIOAVL_HPP
 #define DICIOAVL_HPP
+#include <iostream>
+using namespace std;
 
 // -----------------------------------------------------------------------------
 
@@ -146,6 +148,7 @@ public:
 
     // TODO: Defina os campos da classe Iterador.
     Noh *noh;
+    DicioAVL *dicio;
 
     // -----------------------------------------------------------------------
 
@@ -187,7 +190,7 @@ public:
     // iterador assim inicializado. Porém, isso não é exigido neste trabalho.
 
     Iterador(){};
-    Iterador(Noh *novoNoh) : noh{novoNoh} {};
+    Iterador(Noh *novoNoh, DicioAVL *d) : noh{novoNoh}, dicio{d} {};
     //  {
     //  // TODO
     //  }
@@ -212,6 +215,46 @@ public:
     Noh *ponteiroEsquerdo()
     {
       return this->noh->esquerdo;
+    }
+
+    Noh *retornarEu()
+    {
+      return this->noh;
+    }
+
+    void setarFilhosDoNohInserido(Noh *filho)
+    {
+      this->noh->esquerdo = filho;
+      this->noh->direito = filho;
+    }
+
+    Iterador adicionarFilho(TC c, TV v)
+    {
+      /* Noh *novoNohAserInserido = new Noh{};
+      novoNohAserInserido->chave = c;
+      novoNohAserInserido->valor = v;
+      novoNohAserInserido->pai = this->noh;
+      novoNohAserInserido->esquerdo = &sent;
+      novoNohAserInserido->direito = &sent;
+      novoNohAserInserido->altura = this->noh->altura + 1;
+       */
+      cout << "chave ++++++ " << this->noh->chave << "\n";
+      cout << "asdhajshgkdjghsaj\n";
+      int alturaNova = 0;
+      if (this->noh->altura != -1)
+      {
+        alturaNova = this->noh->altura + 1;
+      }
+      Noh *novoNohAserInserido = new Noh{c, v, this->noh, nullptr, nullptr, alturaNova};
+      if (this->noh->chave >= c)
+      {
+        this->noh->direito = novoNohAserInserido;
+      }
+      else
+      {
+        this->noh->esquerdo = novoNohAserInserido;
+      }
+      return Iterador(novoNohAserInserido, this->dicio);
     }
 
     bool operator!=(Iterador j)
@@ -260,6 +303,26 @@ public:
       return this->noh->valor;
     }
 
+    int alturaIterador()
+    {
+      return this->noh->altura;
+    }
+
+    Noh *chaveMax()
+    {
+      Noh *nohQueEuEstou = this->dicio->raiz->esquerdo;
+
+      if (nohQueEuEstou != &this->dicio->sent)
+      {
+        while (nohQueEuEstou->direito != &this->dicio->sent)
+        {
+          nohQueEuEstou = nohQueEuEstou->direito;
+        }
+      }
+
+      return nohQueEuEstou;
+    }
+
     // -----------------------------------------------------------------------
 
     // Este método deve fazer o iterador passar ao próximo elemento do
@@ -269,31 +332,39 @@ public:
     // Caso não haja chave sucessora (ou seja, caso o iterador aponte para a
     // maior chave), o iterador deve passar a apontar para o "fim" do
     // dicionário.
-
-    Iterador &operator++()
+    Noh *sucessor;
+    Iterador &
+    operator++()
     {
-      // this->noh = this->noh->direito;
-
-      // verificando se o primeiro nó é o nó sentinela
-      // ou seja, quando o ponteiro do filho direito ou esquerdo é nulo
-
-      if (this->noh != &sent)
+      if (this->noh == this->chaveMax())
       {
-        if (this->noh->direito != &sent)
-        {
-          Noh *nohQueEuEstou = this->noh->direito;
-          while (nohQueEuEstou->esquerdo != &sent)
-          {
-            nohQueEuEstou = nohQueEuEstou->esquerdo;
-          }
-          this->noh = nohQueEuEstou;
-        }
-        else
-        {
-          this->noh = this->noh->pai;
-        }
-      }
 
+        this->noh = &this->dicio->sent;
+      }
+      else if (this->noh->direito != &this->dicio->sent)
+      {
+
+        sucessor = this->noh->direito;
+        while (sucessor->esquerdo != &this->dicio->sent)
+        {
+          sucessor = sucessor->esquerdo;
+        }
+        this->noh = sucessor;
+      }
+      else if (this->noh == this->noh->pai->esquerdo)
+      {
+
+        this->noh = this->noh->pai;
+      }
+      else if (this->noh == this->noh->pai->direito)
+      {
+
+        this->noh = this->noh->pai->pai;
+      }
+      else if (this->noh == this->dicio->raiz)
+      {
+        this->noh = &this->dicio->sent;
+      }
       return *this;
     }
 
@@ -319,7 +390,9 @@ public:
     this->sent.esquerdo = nullptr;
     this->sent.pai = nullptr;
     this->sent.altura = -1;
-    this->raiz = &(this->sent);
+
+    this->raiz = new Noh{-456, 7777, &(this->sent), &(this->sent), &(this->sent), 0};
+    this->raiz->esquerdo = &(this->sent);
   }
 
   // --------------------------------------------------------------------------
@@ -344,7 +417,7 @@ public:
     {
       nohQueEuEstou = nohQueEuEstou->esquerdo;
     }
-    return Iterador(nohQueEuEstou);
+    return Iterador(nohQueEuEstou, this);
   }
 
   // --------------------------------------------------------------------------
@@ -356,7 +429,7 @@ public:
 
   Iterador end()
   {
-    return Iterador(&this->sent);
+    return Iterador(&this->sent, this);
   }
 
   // --------------------------------------------------------------------------
@@ -382,27 +455,53 @@ public:
   // necessário que o nó do sucessor realmente ocupe o lugar da árvore que
   // estava sendo ocupado pelo nó a ser removido.
 
+  void concertarInsercao(Noh *nohOndeFoiInserido)
+  {
+  }
+
   Iterador inserir(TC c, TV v)
   {
-    Noh nohAserInserido{c, v, &this->sent, &this->sent, &this->sent};
-    Noh *nohQueEuEstou = this->raiz->direito;
-    this->sent.valor = v;
-    while (nohQueEuEstou.valor != this->sent.valor)
+    Noh *nohOndInser = this->buscarParaInserir(c);
+    // Iterador fimDoDicionario = this->end();
+    Noh *nohAretornar;
+    bool alturaAlmentou = false;
+
+    if (nohOndInser == this->raiz)
     {
-      if (nohQueEuEstou.valor >= v)
+
+      nohOndInser->esquerdo = new Noh{c, v, nohOndInser, &this->sent, &this->sent, nohOndInser->altura + 1};
+      nohOndInser->direito = new Noh{c, v, nohOndInser, &this->sent, &this->sent, nohOndInser->altura + 1};
+      nohAretornar = nohOndInser->direito;
+      alturaAlmentou = true;
+    }
+    else if (c >= nohOndInser->chave)
+    {
+      nohOndInser->direito = new Noh{c, v, nohOndInser, &this->sent, &this->sent, 1};
+      nohAretornar = nohOndInser->direito;
+      if (nohOndInser->esquerdo == &this->sent)
       {
-        nohQueEuEstou = *(nohQueEuEstou.direito);
+
+        alturaAlmentou = true;
       }
-      else
+    }
+    else
+    {
+      nohOndInser->esquerdo = new Noh{c, v, nohOndInser, &this->sent, &this->sent, 1};
+      nohAretornar = nohOndInser->esquerdo;
+      if (nohOndInser->direito == &this->sent)
       {
-        nohQueEuEstou = *(nohQueEuEstou.esquerdo);
+        alturaAlmentou = true;
       }
     }
-    if (nohQueEuEstou != *(this->sent))
+    if (alturaAlmentou)
     {
+      while (nohOndInser != this->raiz)
+      {
+        nohOndInser->altura += 1;
+        nohOndInser = nohOndInser->pai;
+      }
     }
-    {
-    }
+    return Iterador(nohAretornar, this);
   }
 
   // --------------------------------------------------------------------------
@@ -414,17 +513,71 @@ public:
   Iterador buscar(TC c)
   {
     Iterador nohQueEuEstou = this->begin();
-    Iterador fim = this->end();
-    Noh *nohQueEuPoderiaInserir = new noh{};
     this->sent.chave = c;
-    while (nohQueEuEstou.chave != c)
+    Iterador fimDoDicio = this->end();
+    cout << "O set da nova chave foi " << fimDoDicio.chave() << "\n";
+    while (nohQueEuEstou.chave() != fimDoDicio.chave())
     {
-      if (nohQueEuEstou.chave >= c)
-      {
-      }
       ++nohQueEuEstou;
     }
-    return nohQueEuEstou
+    if (nohQueEuEstou == fimDoDicio)
+    {
+      cout << "Não encontrei a chave\n";
+    }
+    else
+    {
+      cout << "Encontrei a chave\n";
+    }
+    return nohQueEuEstou;
+  }
+
+  Noh *buscarParaInserir(TC c)
+  {
+    Noh *nohQueEuEstou = this->raiz->esquerdo;
+    Noh *nohDoPai = nullptr;
+    this->sent.chave = c;
+    if (nohQueEuEstou->chave == sent.chave)
+    {
+
+      nohDoPai = this->raiz;
+    }
+    else
+    {
+
+      while (nohQueEuEstou->chave != c)
+      {
+        nohDoPai = nohQueEuEstou;
+
+        if (c >= nohQueEuEstou->chave)
+        {
+
+          nohQueEuEstou = nohQueEuEstou->direito;
+        }
+        else
+        {
+          nohQueEuEstou = nohQueEuEstou->esquerdo;
+        }
+      }
+    }
+
+    return nohDoPai;
+  }
+
+  void printarDicionario()
+  {
+    Iterador nohQueEuEstou = this->begin();
+    Iterador fim = this->end();
+    cout << nohQueEuEstou.chave() << '\n';
+    cout << fim.alturaIterador() << '\n';
+
+    while (nohQueEuEstou != fim)
+    {
+      cout << "||== Chave: " << nohQueEuEstou.chave() << '\n';
+      cout << "||== Valor: " << nohQueEuEstou.valor() << '\n';
+      cout << "||== Altur: " << nohQueEuEstou.alturaIterador() << '\n';
+      cout << "========================\n";
+      ++nohQueEuEstou;
+    }
   }
 
   // --------------------------------------------------------------------------
