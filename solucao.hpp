@@ -204,6 +204,16 @@ public:
     // o iterador atual e "j" NÃO SE REFEREM ao mesmo elemento ou posição do
     // dicionário.
 
+    Noh *ponteiroDireito()
+    {
+      return this->noh->direito;
+    }
+
+    Noh *ponteiroEsquerdo()
+    {
+      return this->noh->esquerdo;
+    }
+
     bool operator!=(Iterador j)
     {
       return this->noh != j.noh;
@@ -262,7 +272,28 @@ public:
 
     Iterador &operator++()
     {
-      this->noh = this->noh->direito;
+      // this->noh = this->noh->direito;
+
+      // verificando se o primeiro nó é o nó sentinela
+      // ou seja, quando o ponteiro do filho direito ou esquerdo é nulo
+
+      if (this->noh != &sent)
+      {
+        if (this->noh->direito != &sent)
+        {
+          Noh *nohQueEuEstou = this->noh->direito;
+          while (nohQueEuEstou->esquerdo != &sent)
+          {
+            nohQueEuEstou = nohQueEuEstou->esquerdo;
+          }
+          this->noh = nohQueEuEstou;
+        }
+        else
+        {
+          this->noh = this->noh->pai;
+        }
+      }
+
       return *this;
     }
 
@@ -280,8 +311,15 @@ public:
   {
     // definition of the fields of the noh
     // chave,valor,pai,esquerdo,direito
-    this->sent = new Noh{0, 0, nullptr, nullptr, nullptr};
-    this->raiz = new Noh{0, 0, &this->sent, &this->sent, &this->sent};
+    // this->sent = new Noh{-123, 0, nullptr, nullptr, nullptr};
+    // this->raiz = new Noh{0, 0, &this->sent, &this->sent, &this->sent};
+    this->sent.chave = -123;
+    this->sent.valor = 456;
+    this->sent.direito = nullptr;
+    this->sent.esquerdo = nullptr;
+    this->sent.pai = nullptr;
+    this->sent.altura = -1;
+    this->raiz = &(this->sent);
   }
 
   // --------------------------------------------------------------------------
@@ -301,12 +339,12 @@ public:
 
   Iterador begin()
   {
-    Noh *posicaoQueEstou = this->raiz;
-    while (posicaoQueEstou->direito != &this->sent)
+    Noh *nohQueEuEstou = this->raiz;
+    while (nohQueEuEstou->esquerdo != &this->sent)
     {
-      posicaoQueEstou = posicaoQueEstou->esquerdo;
+      nohQueEuEstou = nohQueEuEstou->esquerdo;
     }
-    return Iterador(posicaoQueEstou);
+    return Iterador(nohQueEuEstou);
   }
 
   // --------------------------------------------------------------------------
@@ -375,31 +413,18 @@ public:
 
   Iterador buscar(TC c)
   {
-    Noh *nohQueEuEstou = this->raiz->esquerdo;
+    Iterador nohQueEuEstou = this->begin();
+    Iterador fim = this->end();
+    Noh *nohQueEuPoderiaInserir = new noh{};
     this->sent.chave = c;
-    Noh *ponteiroDopai = nullptr;
-    while (nohQueEuEstou->chave != c)
+    while (nohQueEuEstou.chave != c)
     {
-
-      if (nohQueEuEstou->chave >= c)
+      if (nohQueEuEstou.chave >= c)
       {
-        ponteiroDopai = nohQueEuEstou;
-        nohQueEuEstou = nohQueEuEstou->direito;
       }
-      else
-      {
-        ponteiroDopai = nohQueEuEstou;
-        nohQueEuEstou = nohQueEuEstou->esquerdo;
-      }
+      ++nohQueEuEstou;
     }
-    if (*(nohQueEuEstou) != this->sent)
-    {
-      return Iterador(nohQueEuEstou);
-    }
-    else
-    {
-      return Iterador(ponteiroDopai);
-    }
+    return nohQueEuEstou
   }
 
   // --------------------------------------------------------------------------

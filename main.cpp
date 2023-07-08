@@ -1,8 +1,13 @@
+#include <iostream>
 #include "solucao.hpp"
+using namespace std;
 
 int main()
 {
-    DicioAVL<int, int> teste();
+    DicioAVL<int, int> *teste = new DicioAVL<int, int>();
+    auto testeBusca = teste->buscar(1);
+    cout << "Resultado: " << testeBusca.chave() << "\n";
+
     return 0;
 }
 
