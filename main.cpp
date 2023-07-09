@@ -11,6 +11,12 @@ int main()
     teste->inserir(7, 884545);
     teste->inserir(89, 884545);
     teste->inserir(5, 884545);
+    teste->inserir(10, 884545);
+
+    teste->inserir(9, 884545);
+    teste->inserir(45, 884545);
+    teste->inserir(13, 884545);
+    teste->inserir(17, 884545);
 
     teste->printarDicionario();
 

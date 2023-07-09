@@ -389,7 +389,7 @@ public:
     this->sent.direito = nullptr;
     this->sent.esquerdo = nullptr;
     this->sent.pai = nullptr;
-    this->sent.altura = -1;
+    this->sent.altura = 0;
 
     this->raiz = new Noh{-456, 7777, &(this->sent), &(this->sent), &(this->sent), 0};
     this->raiz->esquerdo = &(this->sent);
@@ -455,8 +455,59 @@ public:
   // necessário que o nó do sucessor realmente ocupe o lugar da árvore que
   // estava sendo ocupado pelo nó a ser removido.
 
-  void concertarInsercao(Noh *nohOndeFoiInserido)
+  void concertarInsercao(Noh *nohComeco)
   {
+    while (nohComeco != this->raiz)
+    {
+      Noh *aux;
+      cout << "==========\n";
+      cout << "dir " << nohComeco->direito->altura << '\n';
+      cout << "esq " << nohComeco->esquerdo->altura << '\n';
+      cout << "==========\n";
+      // bool Esent = (nohComeco->esquerdo->direito == nullptr) || (nohComeco->esquerdo->esquerdo == nullptr) || (nohComeco->direito->direito == nullptr) || (nohComeco->direito->esquerdo == nullptr);
+      cout << "aaaaa  " << Esent << '\n';
+      cout << "=============\n";
+      if ((nohComeco->direito->altura - nohComeco->esquerdo->altura) == -2 && (nohComeco->esquerdo->direito->altura - nohComeco->esquerdo->esquerdo->altura) == -1)
+      {
+        cout << "Altura pendendo pra esquerda e msm lado vou rotacionar para direita \n";
+        aux = nohComeco->esquerdo;
+        nohComeco->esquerdo = nohComeco->esquerdo->direito;
+        aux->pai = nohComeco->pai;
+        nohComeco->pai = aux;
+        aux->direito = nohComeco;
+      }
+      else if ((nohComeco->direito->altura - nohComeco->esquerdo->altura) == 2 && (nohComeco->esquerdo->direito->altura - nohComeco->esquerdo->esquerdo->altura) == 1)
+      {
+        cout << "Altura pendendo pra esquerda e msm lado vou rotacionar para esquerda \n";
+        aux = nohComeco->direito;
+        nohComeco->direito = nohComeco->direito->direito;
+        aux->pai = nohComeco->pai;
+        nohComeco->pai = aux;
+        aux->direito = nohComeco;
+      }
+      else if ((nohComeco->direito->altura - nohComeco->esquerdo->altura) == -2 && (nohComeco->esquerdo->direito->altura - nohComeco->esquerdo->esquerdo->altura) == 1)
+      {
+        cout << "asssssssssssdas\n";
+        aux = nohComeco->esquerdo->direito;
+        nohComeco->esquerdo->direito = nohComeco->esquerdo->direito->direito;
+        aux->pai = nohComeco->esquerdo->pai;
+        nohComeco->esquerdo->pai = aux;
+        aux->direito = nohComeco->esquerdo;
+
+        aux = nohComeco->esquerdo;
+        nohComeco->esquerdo = nohComeco->esquerdo->direito;
+        aux->pai = nohComeco->pai;
+        nohComeco->pai = aux;
+        aux->direito = nohComeco;
+      }
+      else if ((nohComeco->direito->altura - nohComeco->esquerdo->altura) == 2 && (nohComeco->esquerdo->direito->altura - nohComeco->esquerdo->esquerdo->altura) == -1)
+      {
+        cout << "asdad\n";
+      }
+
+      nohComeco = nohComeco->pai;
+    }
+    cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n";
   }
 
   Iterador inserir(TC c, TV v)
@@ -469,8 +520,8 @@ public:
     if (nohOndInser == this->raiz)
     {
 
-      nohOndInser->esquerdo = new Noh{c, v, nohOndInser, &this->sent, &this->sent, nohOndInser->altura + 1};
-      nohOndInser->direito = new Noh{c, v, nohOndInser, &this->sent, &this->sent, nohOndInser->altura + 1};
+      nohOndInser->esquerdo = new Noh{c, v, nohOndInser, &this->sent, &this->sent, 1};
+      nohOndInser->direito = new Noh{c, v, nohOndInser, &this->sent, &this->sent, 1};
       nohAretornar = nohOndInser->direito;
       alturaAlmentou = true;
     }
@@ -480,7 +531,6 @@ public:
       nohAretornar = nohOndInser->direito;
       if (nohOndInser->esquerdo == &this->sent)
       {
-
         alturaAlmentou = true;
       }
     }
@@ -500,6 +550,7 @@ public:
         nohOndInser->altura += 1;
         nohOndInser = nohOndInser->pai;
       }
+      concertarInsercao(nohAretornar->pai);
     }
     return Iterador(nohAretornar, this);
   }
