@@ -13,10 +13,28 @@ int main()
     teste->inserir(5, 884545);
     teste->inserir(10, 884545);
 
-    teste->inserir(9, 884545);
+    teste->inserir(9, 1111111);
     teste->inserir(45, 884545);
     teste->inserir(13, 884545);
     teste->inserir(17, 884545);
+
+    teste->printarDicionario();
+
+    auto nove = teste->buscar(9);
+    cout << "achado " << nove.valor() << '\n';
+
+    teste->remover(nove);
+
+    teste->printarDicionario();
+
+    nove = teste->buscar(13);
+    auto seila = teste->buscar(17);
+
+    teste->remover(seila);
+
+    teste->printarDicionario();
+
+    teste->remover(nove);
 
     teste->printarDicionario();
 
@@ -45,3 +63,13 @@ int main()
 
 
 */
+
+/*
+
+
+    SE x = None
+retorne -1
+h1 = Altura(x.esquerda)
+h2 = Altura(x.direita)
+retorne (1+Max(h1,h2))
+ */
