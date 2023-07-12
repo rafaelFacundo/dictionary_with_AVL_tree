@@ -9,8 +9,8 @@
 // -----------------------------------------------------------------------------
 // IDENTIFICAÇÃO DO(A) ESTUDANTE:
 //
-// NOME:      ...
-// MATRÍCULA: ...
+// NOME:      Rafael Facundo
+// MATRÍCULA: 511798
 // -----------------------------------------------------------------------------
 
 // -----------------------------------------------------------------------------
@@ -208,6 +208,26 @@ public:
     // o iterador atual e "j" NÃO SE REFEREM ao mesmo elemento ou posição do
     // dicionário.
 
+    TC chavePai()
+    {
+      return this->noh->pai->chave;
+    }
+
+    TC chaveDireito()
+    {
+      return this->noh->direito->chave;
+    }
+
+    TC chaveEsquerdo()
+    {
+      return this->noh->esquerdo->chave;
+    }
+
+    Noh *ponteiroPai()
+    {
+      return this->noh->pai;
+    }
+
     Noh *ponteiroDireito()
     {
       return this->noh->direito;
@@ -227,35 +247,6 @@ public:
     {
       this->noh->esquerdo = filho;
       this->noh->direito = filho;
-    }
-
-    Iterador adicionarFilho(TC c, TV v)
-    {
-      /* Noh *novoNohAserInserido = new Noh{};
-      novoNohAserInserido->chave = c;
-      novoNohAserInserido->valor = v;
-      novoNohAserInserido->pai = this->noh;
-      novoNohAserInserido->esquerdo = &sent;
-      novoNohAserInserido->direito = &sent;
-      novoNohAserInserido->altura = this->noh->altura + 1;
-       */
-      cout << "chave ++++++ " << this->noh->chave << "\n";
-      cout << "asdhajshgkdjghsaj\n";
-      int alturaNova = 0;
-      if (this->noh->altura != -1)
-      {
-        alturaNova = this->noh->altura + 1;
-      }
-      Noh *novoNohAserInserido = new Noh{c, v, this->noh, nullptr, nullptr, alturaNova};
-      if (this->noh->chave >= c)
-      {
-        this->noh->direito = novoNohAserInserido;
-      }
-      else
-      {
-        this->noh->esquerdo = novoNohAserInserido;
-      }
-      return Iterador(novoNohAserInserido, this->dicio);
     }
 
     bool operator!=(Iterador j)
@@ -313,11 +304,12 @@ public:
       return this->noh->FatBalan;
     }
 
+    //======================================================
     Noh *chaveMax()
     {
-      Noh *nohQueEuEstou = this->dicio->raiz->esquerdo;
+      Noh *nohQueEuEstou = this->dicio->raiz;
 
-      if (nohQueEuEstou != &this->dicio->sent)
+      if (nohQueEuEstou->altura != 0)
       {
         while (nohQueEuEstou->direito != &this->dicio->sent)
         {
@@ -358,7 +350,6 @@ public:
       }
       else if (this->noh == this->noh->pai->esquerdo)
       {
-
         this->noh = this->noh->pai;
       }
       else if (this->noh == this->noh->pai->direito)
@@ -366,10 +357,11 @@ public:
 
         this->noh = this->noh->pai->pai;
       }
-      else if (this->noh == this->dicio->raiz)
+
+      //===============================================
+      /* else if (this->noh == this->dicio->raiz)
       {
-        this->noh = &this->dicio->sent;
-      }
+      } */
       return *this;
     }
 
@@ -389,15 +381,14 @@ public:
     // chave,valor,pai,esquerdo,direito
     // this->sent = new Noh{-123, 0, nullptr, nullptr, nullptr};
     // this->raiz = new Noh{0, 0, &this->sent, &this->sent, &this->sent};
-    this->sent.chave = -123;
-    this->sent.valor = 456;
+    this->sent.chave = -1;
+    this->sent.valor = 0;
     this->sent.direito = nullptr;
     this->sent.esquerdo = nullptr;
     this->sent.pai = nullptr;
     this->sent.altura = 0;
 
-    this->raiz = new Noh{-456, 7777, &(this->sent), &(this->sent), &(this->sent), 0};
-    this->raiz->esquerdo = &(this->sent);
+    this->raiz = &this->sent;
   }
 
   // --------------------------------------------------------------------------
@@ -417,11 +408,18 @@ public:
 
   Iterador begin()
   {
+    //==============================================
     Noh *nohQueEuEstou = this->raiz;
-    while (nohQueEuEstou->esquerdo != &this->sent)
+    if (nohQueEuEstou != &this->sent)
     {
-      nohQueEuEstou = nohQueEuEstou->esquerdo;
+
+      while (nohQueEuEstou->esquerdo != &this->sent)
+      {
+
+        nohQueEuEstou = nohQueEuEstou->esquerdo;
+      }
     }
+
     return Iterador(nohQueEuEstou, this);
   }
 
@@ -462,17 +460,18 @@ public:
 
   void rotacaoAesquerda(Noh *nohAserRotacionado)
   {
+    cout << "== VOU COMEÇAR UMA ROTAÇÃO A ESQUERDA \n";
     Noh *y = nohAserRotacionado->direito;
     nohAserRotacionado->direito = y->esquerdo;
+
     if (y->esquerdo != &this->sent)
     {
       y->esquerdo->pai = nohAserRotacionado;
     }
     y->pai = nohAserRotacionado->pai;
-    if (nohAserRotacionado->pai == this->raiz)
+    if (nohAserRotacionado->pai == &this->sent)
     {
-      this->raiz->esquerdo = y;
-      this->raiz->direito = y;
+      this->raiz = y;
     }
     else if (nohAserRotacionado == nohAserRotacionado->pai->esquerdo)
     {
@@ -495,10 +494,12 @@ public:
       y->direito->pai = nohAserRotacionado;
     }
     y->pai = nohAserRotacionado->pai;
-    if (nohAserRotacionado->pai == this->raiz)
+    if (nohAserRotacionado->pai == &this->sent)
     {
-      this->raiz->esquerdo = y;
-      this->raiz->direito = y;
+      //===============================================
+      /* this->raiz->esquerdo = y;
+      this->raiz->direito = y; */
+      this->raiz = y;
     }
     else if (nohAserRotacionado == nohAserRotacionado->pai->esquerdo)
     {
@@ -515,74 +516,76 @@ public:
   void concertarInsercao(Noh *nohComeco)
   {
     Noh *aux;
-    while (nohComeco != this->raiz)
+    //===============================================
+    while (nohComeco != &this->sent)
     {
-
+      nohComeco->altura = 1 + max(nohComeco->esquerdo->altura, nohComeco->direito->altura);
+      nohComeco->FatBalan = nohComeco->esquerdo->altura - nohComeco->direito->altura;
       if (nohComeco->FatBalan == 2 && nohComeco->esquerdo->FatBalan >= 0)
       {
         cout << "primeiro if rotacao direita\n";
-        rotacaoDireita(nohComeco);
-        nohComeco->altura = 1 + max(nohComeco->esquerdo->altura, nohComeco->direito->altura);
+        /* cout << "ANTES =================\n";
+        this->printarDicionario(); */
         nohComeco->FatBalan = nohComeco->FatBalan - 1 - max(nohComeco->esquerdo->FatBalan, 0);
         nohComeco->esquerdo->FatBalan = nohComeco->esquerdo->FatBalan - 1 + min(nohComeco->FatBalan, 0);
+        rotacaoDireita(nohComeco);
+        nohComeco->altura = 1 + max(nohComeco->esquerdo->altura, nohComeco->direito->altura);
       }
       else if (nohComeco->FatBalan == 2 && nohComeco->esquerdo->FatBalan < 0)
       {
         cout << "segundo if rotacao dupla direita\n";
         aux = nohComeco->esquerdo;
-        rotacaoAesquerda(aux);
         aux->FatBalan = aux->FatBalan + 1 - min(aux->direito->FatBalan, 0);
         aux->direito->FatBalan = aux->direito->FatBalan + 1 + max(aux->FatBalan, 0);
-
+        rotacaoAesquerda(aux);
         aux->altura = 1 + max(aux->esquerdo->altura, aux->direito->altura);
-        rotacaoDireita(nohComeco);
-        nohComeco->altura = 1 + max(nohComeco->esquerdo->altura, nohComeco->direito->altura);
+
         nohComeco->FatBalan = nohComeco->FatBalan - 1 - max(nohComeco->esquerdo->FatBalan, 0);
         nohComeco->esquerdo->FatBalan = nohComeco->esquerdo->FatBalan - 1 + min(nohComeco->FatBalan, 0);
+        rotacaoDireita(nohComeco);
+        nohComeco->altura = 1 + max(nohComeco->esquerdo->altura, nohComeco->direito->altura);
       }
       else if (nohComeco->FatBalan == -2 && nohComeco->direito->FatBalan <= 0)
       {
-        cout << "terceiro if rotacao esquerda\n";
-        rotacaoAesquerda(nohComeco);
-        nohComeco->altura = 1 + max(nohComeco->esquerdo->altura, nohComeco->direito->altura);
+        cout << "Terceiro if rotacao a esquerda\n";
         nohComeco->FatBalan = nohComeco->FatBalan + 1 - min(nohComeco->direito->FatBalan, 0);
         nohComeco->direito->FatBalan = nohComeco->direito->FatBalan + 1 + max(nohComeco->FatBalan, 0);
+        rotacaoAesquerda(nohComeco);
+        nohComeco->altura = 1 + max(nohComeco->esquerdo->altura, nohComeco->direito->altura);
       }
       else if (nohComeco->FatBalan == -2 && nohComeco->direito->FatBalan > 0)
       {
         cout << "quarto if rotacao dupla esquerda \n";
         aux = nohComeco->direito;
-        rotacaoDireita(aux);
-
         aux->FatBalan = aux->FatBalan - 1 - max(aux->esquerdo->FatBalan, 0);
         aux->esquerdo->FatBalan = aux->esquerdo->FatBalan - 1 + min(aux->FatBalan, 0);
-
+        rotacaoDireita(aux);
         aux->altura = 1 + max(aux->esquerdo->altura, aux->direito->altura);
-        rotacaoAesquerda(nohComeco);
-        nohComeco->altura = 1 + max(nohComeco->esquerdo->altura, nohComeco->direito->altura);
+
         nohComeco->FatBalan = nohComeco->FatBalan + 1 - min(nohComeco->direito->FatBalan, 0);
         nohComeco->direito->FatBalan = nohComeco->direito->FatBalan + 1 + max(nohComeco->FatBalan, 0);
+        rotacaoAesquerda(nohComeco);
+        nohComeco->altura = 1 + max(nohComeco->esquerdo->altura, nohComeco->direito->altura);
       }
       else if (nohComeco->FatBalan == 2)
       {
         cout << "Quinto if rotacao a direita \n";
-        rotacaoDireita(nohComeco);
-        nohComeco->altura = 1 + max(nohComeco->esquerdo->altura, nohComeco->direito->altura);
         nohComeco->FatBalan = nohComeco->FatBalan - 1 - max(nohComeco->esquerdo->FatBalan, 0);
         nohComeco->esquerdo->FatBalan = nohComeco->esquerdo->FatBalan - 1 + min(nohComeco->FatBalan, 0);
+        rotacaoDireita(nohComeco);
+        nohComeco->altura = 1 + max(nohComeco->esquerdo->altura, nohComeco->direito->altura);
       }
       else if (nohComeco->FatBalan == -2)
       {
         cout << "sexto if rotacao esquerda\n";
-        rotacaoAesquerda(nohComeco);
-        nohComeco->altura = 1 + max(nohComeco->esquerdo->altura, nohComeco->direito->altura);
         nohComeco->FatBalan = nohComeco->FatBalan + 1 - min(nohComeco->direito->FatBalan, 0);
         nohComeco->direito->FatBalan = nohComeco->direito->FatBalan + 1 + max(nohComeco->FatBalan, 0);
+        rotacaoAesquerda(nohComeco);
+        nohComeco->altura = 1 + max(nohComeco->esquerdo->altura, nohComeco->direito->altura);
       }
 
       nohComeco = nohComeco->pai;
     }
-    cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n";
   }
 
   Iterador inserir(TC c, TV v)
@@ -590,22 +593,22 @@ public:
     Noh *nohOndInser = this->buscarParaInserir(c);
     // Iterador fimDoDicionario = this->end();
     Noh *nohAretornar;
+    cout << "Vou inserir o nó " << c << '\n';
     bool alturaAlmentou = false;
 
-    if (nohOndInser == this->raiz)
+    if (nohOndInser == &this->sent)
     {
 
-      nohOndInser->esquerdo = new Noh{c, v, nohOndInser, &this->sent, &this->sent, 1};
-      nohOndInser->direito = new Noh{c, v, nohOndInser, &this->sent, &this->sent, 1};
-      nohAretornar = nohOndInser->direito;
-      alturaAlmentou = true;
+      this->raiz = new Noh{c, v, &this->sent, &this->sent, &this->sent, 1};
     }
     else if (c >= nohOndInser->chave)
     {
+
       nohOndInser->direito = new Noh{c, v, nohOndInser, &this->sent, &this->sent, 1};
       nohAretornar = nohOndInser->direito;
       if (nohOndInser->esquerdo == &this->sent)
       {
+
         alturaAlmentou = true;
       }
     }
@@ -618,17 +621,20 @@ public:
         alturaAlmentou = true;
       }
     }
+
     if (alturaAlmentou)
     {
-      while (nohOndInser != this->raiz)
-      {
-        nohOndInser->altura += 1;
-        nohOndInser->FatBalan = nohOndInser->esquerdo->altura - nohOndInser->direito->altura;
-        nohOndInser = nohOndInser->pai;
-      }
+
+      cout << "VOU MANDAR CONCERTAR ==================\n";
+      this->printarDicionario();
       // cout << "Vou concertar a inserção do " << c << '\n';
       concertarInsercao(nohAretornar->pai);
     }
+
+    /*  cout << "DEPOIS CONCERTO ==============\n";
+     this->printarDicionario();
+     cout << "==============\n"; */
+
     return Iterador(nohAretornar, this);
   }
 
@@ -640,12 +646,13 @@ public:
 
   Iterador buscar(TC c)
   {
+
     Iterador nohQueEuEstou = this->begin();
     this->sent.chave = c;
     Iterador fimDoDicio = this->end();
-    cout << "O set da nova chave foi " << fimDoDicio.chave() << "\n";
     while (nohQueEuEstou.chave() != fimDoDicio.chave())
     {
+
       ++nohQueEuEstou;
     }
     if (nohQueEuEstou == fimDoDicio)
@@ -661,12 +668,14 @@ public:
 
   Noh *buscarParaInserir(TC c)
   {
-    Noh *nohQueEuEstou = this->raiz->esquerdo;
+    //===============================================
+    Noh *nohQueEuEstou = this->raiz;
     Noh *nohDoPai = nullptr;
     this->sent.chave = c;
-    if (nohQueEuEstou->chave == sent.chave)
-    {
 
+    if (nohQueEuEstou->chave == this->sent.chave)
+    {
+      cout << "Vou inser a chave " << c << '\n';
       nohDoPai = this->raiz;
     }
     else
@@ -698,12 +707,53 @@ public:
     cout << nohQueEuEstou.chave() << '\n';
     cout << fim.alturaIterador() << '\n';
 
+    if (nohQueEuEstou == fim)
+    {
+      cout << "Valor raiz" << this->raiz->valor << '\n';
+      cout << "Valor ini " << nohQueEuEstou.valor() << '\n';
+      cout << "Valor sent " << fim.valor() << '\n';
+    }
+
     while (nohQueEuEstou != fim)
     {
       cout << "||== Chave: " << nohQueEuEstou.chave() << '\n';
       cout << "||== Valor: " << nohQueEuEstou.valor() << '\n';
       cout << "||== Altur: " << nohQueEuEstou.alturaIterador() << '\n';
       cout << "||== Fatba: " << nohQueEuEstou.fatorBalan() << '\n';
+
+      if (nohQueEuEstou.ponteiroPai() == &this->sent)
+      {
+        cout << "||== pai  : senti\n";
+      }
+      else
+      {
+        cout << "||== pai  : " << nohQueEuEstou.chavePai() << '\n';
+      }
+      if (nohQueEuEstou.ponteiroDireito() == &this->sent)
+      {
+        cout << "||== dir  : sent\n";
+      }
+      else
+      {
+        cout << "||== dir  : " << nohQueEuEstou.chaveDireito() << '\n';
+      }
+
+      if (nohQueEuEstou.ponteiroEsquerdo() == &this->sent)
+      {
+        cout << "||== esq  : senti\n";
+      }
+      else
+      {
+        cout << "||== esq  : " << nohQueEuEstou.chaveEsquerdo() << '\n';
+      }
+
+      if (nohQueEuEstou.chave() == 10)
+      {
+        Noh *teste = nohQueEuEstou.ponteiroPai();
+        cout << "FI dir pai: " << teste->direito->chave << '\n';
+        cout << "FI esq pai: " << teste->esquerdo->chave << '\n';
+      }
+
       cout << "========================\n";
       ++nohQueEuEstou;
     }
@@ -722,10 +772,11 @@ public:
 
   void transplantar(Noh *u, Noh *v)
   {
-    if (u->pai == this->raiz)
+    if (u->pai == &this->sent)
     {
-      this->raiz->esquerdo = v;
-      this->raiz->direito = v;
+      /* this->raiz->esquerdo = v;
+      this->raiz->direito = v; */
+      this->raiz = v;
     }
     else if (u == u->pai->esquerdo)
     {
@@ -754,7 +805,8 @@ public:
   void concertarRemocao(Noh *nohComeco)
   {
     Noh *aux;
-    while (nohComeco != this->raiz)
+    //===============================================
+    while (nohComeco->pai != &this->sent)
     {
       nohComeco->altura = 1 + max(nohComeco->esquerdo->altura, nohComeco->direito->altura);
       nohComeco->FatBalan = nohComeco->esquerdo->altura - nohComeco->direito->altura;
@@ -762,63 +814,62 @@ public:
       if (nohComeco->FatBalan == 2 && nohComeco->esquerdo->FatBalan >= 0)
       {
         cout << "remoca primeiro if rotacao direita\n";
-        rotacaoDireita(nohComeco);
-        nohComeco->altura = 1 + max(nohComeco->esquerdo->altura, nohComeco->direito->altura);
         nohComeco->FatBalan = nohComeco->FatBalan - 1 - max(nohComeco->esquerdo->FatBalan, 0);
         nohComeco->esquerdo->FatBalan = nohComeco->esquerdo->FatBalan - 1 + min(nohComeco->FatBalan, 0);
+        rotacaoDireita(nohComeco);
+        nohComeco->altura = 1 + max(nohComeco->esquerdo->altura, nohComeco->direito->altura);
       }
       else if (nohComeco->FatBalan == 2 && nohComeco->esquerdo->FatBalan < 0)
       {
         cout << "remoca segundo if rotacao dupla direita\n";
         aux = nohComeco->esquerdo;
-        rotacaoAesquerda(aux);
         aux->FatBalan = aux->FatBalan + 1 - min(aux->direito->FatBalan, 0);
         aux->direito->FatBalan = aux->direito->FatBalan + 1 + max(aux->FatBalan, 0);
-
+        rotacaoAesquerda(aux);
         aux->altura = 1 + max(aux->esquerdo->altura, aux->direito->altura);
-        rotacaoDireita(nohComeco);
-        nohComeco->altura = 1 + max(nohComeco->esquerdo->altura, nohComeco->direito->altura);
+
         nohComeco->FatBalan = nohComeco->FatBalan - 1 - max(nohComeco->esquerdo->FatBalan, 0);
         nohComeco->esquerdo->FatBalan = nohComeco->esquerdo->FatBalan - 1 + min(nohComeco->FatBalan, 0);
+        rotacaoDireita(nohComeco);
+        nohComeco->altura = 1 + max(nohComeco->esquerdo->altura, nohComeco->direito->altura);
       }
       else if (nohComeco->FatBalan == -2 && nohComeco->direito->FatBalan <= 0)
       {
         cout << "remoca terceiro if rotacao esquerda\n";
-        rotacaoAesquerda(nohComeco);
-        nohComeco->altura = 1 + max(nohComeco->esquerdo->altura, nohComeco->direito->altura);
         nohComeco->FatBalan = nohComeco->FatBalan + 1 - min(nohComeco->direito->FatBalan, 0);
         nohComeco->direito->FatBalan = nohComeco->direito->FatBalan + 1 + max(nohComeco->FatBalan, 0);
+        rotacaoAesquerda(nohComeco);
+        nohComeco->altura = 1 + max(nohComeco->esquerdo->altura, nohComeco->direito->altura);
       }
       else if (nohComeco->FatBalan == -2 && nohComeco->direito->FatBalan > 0)
       {
         cout << "remoca quarto if rotacao dupla esquerda \n";
         aux = nohComeco->direito;
-        rotacaoDireita(aux);
-
         aux->FatBalan = aux->FatBalan - 1 - max(aux->esquerdo->FatBalan, 0);
         aux->esquerdo->FatBalan = aux->esquerdo->FatBalan - 1 + min(aux->FatBalan, 0);
-
+        rotacaoDireita(aux);
         aux->altura = 1 + max(aux->esquerdo->altura, aux->direito->altura);
-        rotacaoAesquerda(nohComeco);
-        nohComeco->altura = 1 + max(nohComeco->esquerdo->altura, nohComeco->direito->altura);
+
         nohComeco->FatBalan = nohComeco->FatBalan + 1 - min(nohComeco->direito->FatBalan, 0);
         nohComeco->direito->FatBalan = nohComeco->direito->FatBalan + 1 + max(nohComeco->FatBalan, 0);
+        rotacaoAesquerda(nohComeco);
+        nohComeco->altura = 1 + max(nohComeco->esquerdo->altura, nohComeco->direito->altura);
       }
       else if (nohComeco->FatBalan == 2)
       {
         cout << "remoca Quinto if rotacao a direita \n";
-        rotacaoDireita(nohComeco);
-        nohComeco->altura = 1 + max(nohComeco->esquerdo->altura, nohComeco->direito->altura);
         nohComeco->FatBalan = nohComeco->FatBalan - 1 - max(nohComeco->esquerdo->FatBalan, 0);
         nohComeco->esquerdo->FatBalan = nohComeco->esquerdo->FatBalan - 1 + min(nohComeco->FatBalan, 0);
+        rotacaoDireita(nohComeco);
+        nohComeco->altura = 1 + max(nohComeco->esquerdo->altura, nohComeco->direito->altura);
       }
       else if (nohComeco->FatBalan == -2)
       {
         cout << "remoca sexto if rotacao esquerda\n";
-        rotacaoAesquerda(nohComeco);
-        nohComeco->altura = 1 + max(nohComeco->esquerdo->altura, nohComeco->direito->altura);
         nohComeco->FatBalan = nohComeco->FatBalan + 1 - min(nohComeco->direito->FatBalan, 0);
         nohComeco->direito->FatBalan = nohComeco->direito->FatBalan + 1 + max(nohComeco->FatBalan, 0);
+        rotacaoAesquerda(nohComeco);
+        nohComeco->altura = 1 + max(nohComeco->esquerdo->altura, nohComeco->direito->altura);
       }
 
       nohComeco = nohComeco->pai;
@@ -829,31 +880,47 @@ public:
   {
     Noh *y;
     Noh *aux;
+    cout << "VOu remover o " << nohPremover->chave << '\n';
     if (nohPremover->esquerdo == &this->sent)
     {
+      cout << "aaa\n";
       this->transplantar(nohPremover, nohPremover->direito);
       this->concertarRemocao(nohPremover->pai);
     }
     else if (nohPremover->direito == &this->sent)
     {
+      cout << "bbb\n";
+
       this->transplantar(nohPremover, nohPremover->esquerdo);
       this->concertarRemocao(nohPremover->pai);
     }
     else
     {
+      cout << "ccc\n";
+
       y = sucessor(nohPremover);
 
       this->transplantar(y, y->direito);
+
       y->esquerdo = nohPremover->esquerdo;
+
       nohPremover->esquerdo->pai = y;
+
       y->direito = nohPremover->direito;
+
       if (nohPremover->direito != &this->sent)
       {
         nohPremover->direito->pai = y;
       }
 
       this->transplantar(nohPremover, y);
+
+      cout << "+++||||+===========\n";
+      this->printarDicionario();
+      cout << "+++||||+===========\n";
+
       aux = y->pai;
+
       this->concertarRemocao(aux);
     }
   }

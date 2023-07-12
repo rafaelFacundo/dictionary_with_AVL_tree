@@ -8,14 +8,21 @@ int main()
     // auto testeBusca = teste->inserir(1, 1917);
     teste->buscar(-1898);
     teste->inserir(6, 2356);
+
     teste->inserir(7, 884545);
+
     teste->inserir(89, 884545);
+
     teste->inserir(5, 884545);
+
     teste->inserir(10, 884545);
 
     teste->inserir(9, 1111111);
+
     teste->inserir(45, 884545);
+
     teste->inserir(13, 884545);
+
     teste->inserir(17, 884545);
 
     teste->printarDicionario();
@@ -25,14 +32,14 @@ int main()
 
     teste->remover(nove);
 
-    teste->printarDicionario();
-
     nove = teste->buscar(13);
     auto seila = teste->buscar(17);
 
     teste->remover(seila);
 
     teste->printarDicionario();
+
+    cout << "++++++++++++++++++++++++++++\n";
 
     teste->remover(nove);
 
