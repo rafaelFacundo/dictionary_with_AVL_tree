@@ -4,30 +4,42 @@ using namespace std;
 
 int main()
 {
-    DicioAVL<int, int> *teste = new DicioAVL<int, int>();
+    DicioAVL<double, double> *teste = new DicioAVL<double, double>();
     // auto testeBusca = teste->inserir(1, 1917);
-    teste->buscar(-1898);
-    teste->inserir(6, 2356);
+    auto busca = teste->buscar(-1898);
+    if (busca == teste->end())
+    {
+        cout << "=== CHAVE NÃO FOI ENCONTRADA ===\n";
+    }
+    auto retornoInsercao = teste->inserir(299.25, -56);
 
-    teste->inserir(7, 884545);
+    cout << "O RETORNO INSERCAO FOI == " << retornoInsercao.chave() << '\n';
 
-    teste->inserir(89, 884545);
+    retornoInsercao = teste->inserir(7.75, 67.5);
 
-    teste->inserir(5, 884545);
+    retornoInsercao = teste->inserir(67.5, -40.5);
 
-    teste->inserir(10, 884545);
+    retornoInsercao = teste->inserir(82.5, 4.5);
 
-    teste->inserir(9, 1111111);
+    retornoInsercao = teste->inserir(-3.75, 94.5);
 
-    teste->inserir(45, 884545);
+    retornoInsercao = teste->inserir(-124.25, 54);
 
-    teste->inserir(13, 884545);
-
-    teste->inserir(17, 884545);
+    retornoInsercao = teste->inserir(16, 53.5);
 
     teste->printarDicionario();
 
-    auto nove = teste->buscar(9);
+    busca = teste->buscar(4445466556656565);
+    if (busca == teste->end())
+    {
+        cout << "=== CHAVE NÃO FOI ENCONTRADA ===\n";
+    }
+    else
+    {
+        cout << "+++ ACHEI A CHAVE 67\n";
+    }
+
+    /* auto nove = teste->buscar(9);
     cout << "achado " << nove.valor() << '\n';
 
     teste->remover(nove);
@@ -43,7 +55,7 @@ int main()
 
     teste->remover(nove);
 
-    teste->printarDicionario();
+    teste->printarDicionario(); */
 
     return 0;
 }
@@ -52,31 +64,13 @@ int main()
 
 /*
 
-    primeiro to na raiz
-    pego o filho esquerdo dela
 
-    cheguei até o penultimo nó
-    não achei a chave
-    ela é diferente, logo o while vai rodar mais uma vez
-    então eu coloco o ponteiroProPai no nó que eu estou
-    e vejo para onde vou (vou para o sentinela independente para onde descer)
-    coloco o nohQueEuEstou para o filho do nó atual
-    quando o while for rodar denovo
-    ele vão vai entrar pois ele chegou no sentinela
-    e o sentinela sempre tem o valor que eu estou procurando
-    e como a condição é ser diferente o while não vai rodar
-
-
-
-
-*/
-
-/*
-
-
-    SE x = None
-retorne -1
-h1 = Altura(x.esquerda)
-h2 = Altura(x.direita)
-retorne (1+Max(h1,h2))
+    Vai inicializar ... ok.
+    Vai inserir (299.25, -56) ... ok.
+    Vai inserir (7.75, 67.5) ... ok.
+    Vai inserir (67.5, -40.5) ... ok.
+    Vai inserir (82.5, 4.5) ... ok.
+    Vai inserir (-3.75, 94.5) ... ok.
+    Vai inserir (-124.25, 54) ... ok.
+    Vai inserir (16, 53.5) ... ok.
  */

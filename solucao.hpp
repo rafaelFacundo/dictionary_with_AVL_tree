@@ -340,7 +340,6 @@ public:
       }
       else if (this->noh->direito != &this->dicio->sent)
       {
-
         sucessor = this->noh->direito;
         while (sucessor->esquerdo != &this->dicio->sent)
         {
@@ -354,8 +353,12 @@ public:
       }
       else if (this->noh == this->noh->pai->direito)
       {
-
-        this->noh = this->noh->pai->pai;
+        Noh *nohToReturn = this->noh;
+        while (nohToReturn == nohToReturn->pai->direito)
+        {
+          nohToReturn = nohToReturn->pai;
+        }
+        this->noh = nohToReturn->pai;
       }
 
       //===============================================
@@ -598,14 +601,17 @@ public:
 
     if (nohOndInser == &this->sent)
     {
-
       this->raiz = new Noh{c, v, &this->sent, &this->sent, &this->sent, 1};
+      nohAretornar = this->raiz;
+
+      cout << "++++ O RETORNO === " << nohAretornar->chave << '\n';
     }
     else if (c >= nohOndInser->chave)
     {
 
       nohOndInser->direito = new Noh{c, v, nohOndInser, &this->sent, &this->sent, 1};
       nohAretornar = nohOndInser->direito;
+
       if (nohOndInser->esquerdo == &this->sent)
       {
 
@@ -628,12 +634,14 @@ public:
       cout << "VOU MANDAR CONCERTAR ==================\n";
       this->printarDicionario();
       // cout << "Vou concertar a inserção do " << c << '\n';
-      concertarInsercao(nohAretornar->pai);
+      concertarInsercao(nohOndInser);
     }
 
     /*  cout << "DEPOIS CONCERTO ==============\n";
      this->printarDicionario();
      cout << "==============\n"; */
+
+    cout << "VOU RETORNAR A CHAVE: " << nohAretornar->chave << '\n';
 
     return Iterador(nohAretornar, this);
   }
@@ -646,24 +654,43 @@ public:
 
   Iterador buscar(TC c)
   {
-
-    Iterador nohQueEuEstou = this->begin();
+    Noh *nohQueEuEstou = this->raiz;
     this->sent.chave = c;
-    Iterador fimDoDicio = this->end();
-    while (nohQueEuEstou.chave() != fimDoDicio.chave())
-    {
 
-      ++nohQueEuEstou;
-    }
-    if (nohQueEuEstou == fimDoDicio)
+    /* if (nohQueEuEstou->chave == this->sent.chave)
     {
-      cout << "Não encontrei a chave\n";
+      nohDoPai = this->raiz;
     }
     else
     {
-      cout << "Encontrei a chave\n";
+      while (nohQueEuEstou->chave != c)
+      {
+        if (c >= nohQueEuEstou->chave)
+        {
+
+          nohQueEuEstou = nohQueEuEstou->direito;
+        }
+        else
+        {
+          nohQueEuEstou = nohQueEuEstou->esquerdo;
+        }
+      }
+    } */
+
+    while (nohQueEuEstou->chave != c)
+    {
+      if (c >= nohQueEuEstou->chave)
+      {
+
+        nohQueEuEstou = nohQueEuEstou->direito;
+      }
+      else
+      {
+        nohQueEuEstou = nohQueEuEstou->esquerdo;
+      }
     }
-    return nohQueEuEstou;
+
+    return Iterador(nohQueEuEstou, this);
   }
 
   Noh *buscarParaInserir(TC c)
@@ -757,6 +784,8 @@ public:
       cout << "========================\n";
       ++nohQueEuEstou;
     }
+
+    cout << "+++++++++============+++++++++++\n";
   }
 
   // --------------------------------------------------------------------------
